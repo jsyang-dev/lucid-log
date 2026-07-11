@@ -1,0 +1,105 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import PostCard from '../../components/PostCard.astro';
+import TagFilter from '../../components/TagFilter.astro';
+import { SITE_TITLE, collectTags, tagSlug } from '../../consts';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	const tags = collectTags(posts);
+	const total = posts.length;
+	return tags.map((t) => ({
+		params: { tag: t.slug },
+		props: {
+			tag: t.tag,
+			slug: t.slug,
+			allTags: tags,
+			total,
+			posts: posts
+				.filter((p) => (p.data.tags ?? []).some((x) => tagSlug(x) === t.slug))
+				.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+		},
+	}));
+}
+
+const { tag, slug, allTags, total, posts } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ko">
+	<head>
+		<BaseHead
+			title={`#${tag} · ${SITE_TITLE}`}
+			description={`'${tag}' 태그가 달린 글 ${posts.length}개.`}
+		/>
+		<style>
+			main {
+				width: var(--maxw-wide);
+			}
+			.page-head {
+				margin-bottom: 1.6em;
+			}
+			.page-head .kicker {
+				display: inline-block;
+				font-size: 0.85rem;
+				font-weight: 700;
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
+				color: rgb(var(--gray));
+				margin-bottom: 0.3em;
+			}
+			.page-head h1 {
+				margin: 0;
+				font-size: 2.1rem;
+			}
+			.page-head h1 .hash {
+				color: rgb(var(--gray));
+				font-weight: 700;
+			}
+			.page-head .n {
+				color: rgb(var(--gray));
+				font-size: 1rem;
+				font-weight: 500;
+				margin-left: 0.4em;
+			}
+			.post-list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+			}
+			.post-list > li {
+				padding: 2.6em 0;
+				border-top: 1px solid rgb(var(--gray-light));
+			}
+			.post-list > li:first-child {
+				padding-top: 0.5em;
+				border-top: none;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="page-head">
+				<span class="kicker">Tag</span>
+				<h1><span class="hash">#</span>{tag}<span class="n">글 {posts.length}개</span></h1>
+			</div>
+			<TagFilter tags={allTags} total={total} active={slug} />
+			<ul class="post-list">
+				{
+					posts.map((post) => (
+						<li>
+							<PostCard post={post} />
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>

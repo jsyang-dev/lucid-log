@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE_DESCRIPTION, SITE_TITLE, withBase } from '../consts';
+
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 4);
+---
+
+<!doctype html>
+<html lang="ko">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: var(--maxw-wide);
+			}
+			.intro {
+				padding: 1.5em 0 2.5em;
+				border-bottom: 1px solid rgb(var(--gray-light));
+				margin-bottom: 2.5em;
+			}
+			.intro h1 {
+				font-size: clamp(2rem, 5vw, 2.8rem);
+				line-height: 1.25;
+				margin: 0 0 0.4em;
+				color: rgb(var(--black));
+			}
+			.intro p {
+				max-width: 48ch;
+				margin: 0 0 1.4em;
+				color: rgb(var(--gray));
+				font-size: 1.1rem;
+				line-height: 1.7;
+			}
+			.actions {
+				display: flex;
+				gap: 0.8em;
+				flex-wrap: wrap;
+			}
+			.btn {
+				display: inline-block;
+				padding: 0.5em 1.2em;
+				border-radius: 999px;
+				font-size: 0.95rem;
+				text-decoration: none;
+				border: 1px solid rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+				transition:
+					border-color 0.15s ease,
+					color 0.15s ease;
+			}
+			.btn.primary {
+				background: rgb(var(--black));
+				color: rgb(var(--bg));
+				border-color: rgb(var(--black));
+			}
+			.btn:hover {
+				color: rgb(var(--accent));
+				border-color: rgb(var(--accent) / 45%);
+			}
+			.btn.primary:hover {
+				color: rgb(var(--bg));
+				border-color: rgb(var(--black));
+				opacity: 0.9;
+			}
+			.section-head {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				margin: 0 0 1.6em;
+			}
+			.section-head h2 {
+				margin: 0;
+				font-size: 1.3rem;
+			}
+			.section-head a {
+				font-size: 0.9rem;
+				color: rgb(var(--gray));
+				text-decoration: none;
+			}
+			.section-head a:hover {
+				color: rgb(var(--accent));
+			}
+			.post-list {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+				display: flex;
+				flex-direction: column;
+			}
+			.post-list > li {
+				padding: 2.4em 0;
+				border-top: 1px solid rgb(var(--gray-light));
+			}
+			.post-list > li:first-child {
+				padding-top: 0;
+				border-top: none;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="intro">
+				<h1>{SITE_TITLE}</h1>
+				<p>{SITE_DESCRIPTION}</p>
+				<div class="actions">
+					<a class="btn primary" href={withBase('/blog')}>글 보기</a>
+					<a class="btn" href={withBase('/tags')}>태그</a>
+				</div>
+			</section>
+
+			<div class="section-head">
+				<h2>최근 글</h2>
+				<a href={withBase('/blog')}>전체 보기 →</a>
+			</div>
+			<ul class="post-list">
+				{
+					posts.map((post) => (
+						<li>
+							<PostCard post={post} />
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>

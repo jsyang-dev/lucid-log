@@ -1,0 +1,59 @@
+---
+import { SITE_TITLE, withBase } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header>
+	<nav>
+		<a class="brand" href={withBase('/')}>{SITE_TITLE}</a>
+		<div class="internal-links">
+			<HeaderLink href="/">홈</HeaderLink>
+			<HeaderLink href="/blog">글</HeaderLink>
+			<HeaderLink href="/tags">태그</HeaderLink>
+			<HeaderLink href="/about">소개</HeaderLink>
+		</div>
+	</nav>
+</header>
+<style>
+	header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		margin: 0;
+		padding: 0 1.5em;
+		background: rgb(var(--surface) / 80%);
+		backdrop-filter: saturate(120%) blur(12px);
+		-webkit-backdrop-filter: saturate(120%) blur(12px);
+		border-bottom: 1px solid rgb(var(--gray-light));
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		max-width: var(--maxw-wide);
+		margin: 0 auto;
+	}
+	.brand {
+		font-weight: 700;
+		font-size: 1.1rem;
+		letter-spacing: -0.02em;
+		color: rgb(var(--black));
+		text-decoration: none;
+		padding: 0.95em 0;
+	}
+	.brand:hover {
+		color: rgb(var(--accent));
+	}
+	.internal-links {
+		display: flex;
+		gap: 0.2em;
+	}
+	@media (max-width: 720px) {
+		header {
+			padding: 0 1em;
+		}
+		.brand {
+			font-size: 1.02rem;
+		}
+	}
+</style>

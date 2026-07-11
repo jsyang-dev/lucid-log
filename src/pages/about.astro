@@ -1,0 +1,25 @@
+---
+import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
+import Layout from '../layouts/BlogPost.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<Layout
+	title="소개"
+	description={`${SITE_TITLE} — 개인 지식 베이스에서 골라 옮긴 글을 발행하는 공간입니다.`}
+	pubDate={new Date()}
+	heroImage={AboutHeroImage}
+>
+	<p>
+		<strong>{SITE_TITLE}</strong>는 개인 지식 베이스(CMDS PKM)에 쌓아 둔 노트 가운데, 남과
+		나누면 좋을 글을 골라 다듬어 발행하는 공간입니다. 개발과 일에서 배운 것, 그리고 여행의
+		기록을 주로 담습니다.
+	</p>
+
+	<p>
+		모든 글은 옵시디언 볼트에서 작성한 원본을 바탕으로 하며, 웹에 맞게 정리한 뒤 이곳으로
+		옮깁니다. 시간이 지나며 내용이 바뀌면 글도 함께 업데이트됩니다.
+	</p>
+
+	<p>궁금한 점이나 피드백이 있다면 언제든 환영합니다.</p>
+</Layout>

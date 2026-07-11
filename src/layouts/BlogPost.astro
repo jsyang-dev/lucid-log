@@ -1,0 +1,227 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import TagList from '../components/TagList.astro';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.props;
+---
+
+<html lang="ko">
+	<head>
+		<BaseHead title={title} description={description} image={heroImage} />
+		<style>
+			main {
+				width: var(--maxw-wide);
+			}
+			article {
+				padding-bottom: 2em;
+			}
+
+			/* ── Overlay (magazine) hero — posts with a heroImage ── */
+			.hero-banner {
+				position: relative;
+				width: 100%;
+				max-width: none; /* 좌우 여백 없이 화면 꽉 차게(full-bleed) */
+				margin: 0;
+				height: clamp(240px, 32vw, 380px);
+				overflow: hidden;
+				background: rgb(var(--surface-2));
+			}
+			.hero-banner :global(img) {
+				position: absolute;
+				inset: 0;
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				display: block;
+			}
+			.hero-scrim {
+				position: absolute;
+				inset: 0;
+				/* 이미지 전체를 은은하게 딤(투명도) + 하단은 조금 더 어둡게 → 제목이 이미지에 겹쳐 보이도록 */
+				background:
+					linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.22) 55%, rgba(0, 0, 0, 0.14) 100%),
+					rgba(0, 0, 0, 0.12);
+			}
+			.hero-overlay {
+				position: absolute;
+				inset: 0;
+				display: flex;
+				align-items: center;
+			}
+			.hero-inner {
+				width: 100%;
+				max-width: var(--maxw-wide);
+				margin: 0 auto;
+				padding: 2.2em 1.25em;
+				color: #fff;
+			}
+			.hero-inner .meta {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5em;
+				font-size: 0.85rem;
+				letter-spacing: 0.02em;
+				color: rgba(255, 255, 255, 0.85);
+				margin-bottom: 0.6em;
+				text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+			}
+			.hero-inner .meta .dot {
+				width: 4px;
+				height: 4px;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.75);
+			}
+			.hero-inner .last-updated-on {
+				font-style: italic;
+			}
+			.hero-inner h1 {
+				margin: 0;
+				color: #fff;
+				font-size: clamp(1.75rem, 4.6vw, 2.85rem);
+				line-height: 1.22;
+				letter-spacing: -0.02em;
+				text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+			}
+			.hero-inner .tags {
+				margin-top: 1em;
+			}
+			/* tag chips over the dark scrim */
+			.hero-inner :global(.tag-chip) {
+				color: #fff;
+				background: rgba(255, 255, 255, 0.16);
+				border-color: rgba(255, 255, 255, 0.5);
+				backdrop-filter: blur(3px);
+				-webkit-backdrop-filter: blur(3px);
+			}
+			.hero-inner :global(.tag-chip:hover) {
+				color: #fff;
+				background: rgba(255, 255, 255, 0.3);
+				border-color: rgba(255, 255, 255, 0.75);
+			}
+
+			.lead {
+				max-width: var(--maxw-prose);
+				margin: 0 auto 0.5em;
+				color: rgb(var(--gray));
+				font-size: 1.1rem;
+				line-height: 1.75;
+			}
+
+			/* ── Plain (no hero) header — white, no overlay ── */
+			.title {
+				margin-bottom: 2em;
+			}
+			.title .meta {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5em;
+				font-size: 0.85rem;
+				letter-spacing: 0.02em;
+				color: rgb(var(--gray));
+				margin-bottom: 0.6em;
+			}
+			.title .meta .dot {
+				width: 4px;
+				height: 4px;
+				border-radius: 50%;
+				background: rgb(var(--gray));
+			}
+			.title .last-updated-on {
+				font-style: italic;
+			}
+			.title h1 {
+				margin: 0 0 0.5em;
+				line-height: 1.25;
+			}
+			.title .description {
+				margin: 0 0 1em;
+				color: rgb(var(--gray));
+				font-size: 1.1rem;
+				line-height: 1.7;
+			}
+
+			.prose {
+				max-width: var(--maxw-prose);
+				margin: 0 auto;
+				color: rgb(var(--gray-dark));
+			}
+
+			@media (max-width: 720px) {
+				.hero-banner {
+					height: clamp(200px, 46vw, 300px);
+				}
+				.hero-inner {
+					padding: 1.5em 1.15em;
+				}
+				.title {
+					margin-bottom: 1.4em;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		{
+			heroImage && (
+				<section class="hero-banner">
+					<Image width={1920} height={1080} src={heroImage} alt={title} />
+					<div class="hero-scrim" />
+					<div class="hero-overlay">
+						<div class="hero-inner">
+							<div class="meta">
+								<FormattedDate date={pubDate} />
+								{updatedDate && (
+									<>
+										<span class="dot" />
+										<span class="last-updated-on">
+											수정 <FormattedDate date={updatedDate} />
+										</span>
+									</>
+								)}
+							</div>
+							<h1>{title}</h1>
+							<TagList tags={tags} />
+						</div>
+					</div>
+				</section>
+			)
+		}
+		<main>
+			<article>
+				{
+					!heroImage && (
+						<header class="title">
+							<div class="meta">
+								<FormattedDate date={pubDate} />
+								{updatedDate && (
+									<>
+										<span class="dot" />
+										<span class="last-updated-on">
+											수정 <FormattedDate date={updatedDate} />
+										</span>
+									</>
+								)}
+							</div>
+							<h1>{title}</h1>
+							{description && <p class="description">{description}</p>}
+							<TagList tags={tags} />
+						</header>
+					)
+				}
+				{heroImage && description && <p class="lead">{description}</p>}
+				<div class="prose">
+					<slot />
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

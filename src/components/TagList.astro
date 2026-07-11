@@ -1,0 +1,24 @@
+---
+import { tagSlug, withBase } from '../consts';
+
+interface Props {
+	tags?: string[];
+	class?: string;
+}
+const { tags = [], class: className } = Astro.props;
+---
+
+{
+	tags.length > 0 && (
+		<ul class:list={['tags', className]}>
+			{tags.map((t) => (
+				<li>
+					<a class="tag-chip" href={withBase(`/tags/${tagSlug(t)}/`)}>
+						<span aria-hidden="true">#</span>
+						{t}
+					</a>
+				</li>
+			))}
+		</ul>
+	)
+}

@@ -1,0 +1,37 @@
+---
+import { withBase } from '../consts';
+import type { TagCount } from '../consts';
+
+interface Props {
+	tags: TagCount[];
+	total: number;
+	/** active tag slug, or 'all' for the "전체" chip */
+	active?: string;
+}
+const { tags, total, active = 'all' } = Astro.props;
+---
+
+<nav class="tag-filter" aria-label="태그 필터">
+	<a class:list={['tag-chip', { active: active === 'all' }]} href={withBase('/blog')}>
+		전체 <span class="count">{total}</span>
+	</a>
+	{
+		tags.map((t) => (
+			<a
+				class:list={['tag-chip', { active: active === t.slug }]}
+				href={withBase(`/tags/${t.slug}/`)}
+			>
+				{t.tag} <span class="count">{t.count}</span>
+			</a>
+		))
+	}
+</nav>
+
+<style>
+	.tag-filter {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5em;
+		margin: 0 0 2.4em;
+	}
+</style>
