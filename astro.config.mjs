@@ -3,12 +3,19 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
+import rehypeExternalLinks from 'rehype-external-links';
 
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://jsyang-dev.github.io',
 	base: '/lucid-log',
 	integrations: [mdx(), sitemap()],
+	markdown: {
+		// 외부 링크는 새 창으로 (내부 링크는 그대로)
+		rehypePlugins: [
+			[rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }],
+		],
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),
