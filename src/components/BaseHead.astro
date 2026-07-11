@@ -26,7 +26,8 @@ const { title, description, image = FallbackImage } = Astro.props;
 <!-- Pretendard (Korean-first webfont) -->
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
-<link rel="icon" href={withBase('/favicon.ico')} />
+<link rel="icon" href={withBase('/favicon.ico')} sizes="any" />
+<link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
 <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
 <link
 	rel="alternate"
