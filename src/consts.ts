@@ -1,7 +1,7 @@
 // Place any global data in this file.
 // You can import this data from anywhere in your site by using the `import` keyword.
 
-export const SITE_TITLE = '선명한 기록';
+export const SITE_TITLE = 'Lucid Log';
 export const SITE_DESCRIPTION = '개발·여행·지식을 선명하게 남기는 기록 · Lucid Log';
 
 // Prefix a path with the configured `base` (e.g. `/cmds-blog`) so internal
