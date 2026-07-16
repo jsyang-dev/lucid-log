@@ -178,9 +178,6 @@ LLM Wiki 위에 **지식을 만들어 넣는 하네스**들을 함께 붙였다.
 ## 7. 참고
 
 - **Karpathy LLM Wiki (원본 gist)**: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
-- **스키마**: 이 볼트 `AGENTS.md` (wiki 페이지 구조·병합·유지 규칙)
-- **하네스 정의**: `.claude/skills/`(스킬) · `.claude/agents/`(에이전트)
-- 관심 있으면 최소 구성(raw/wiki/infra 3폴더 + `AGENTS.md` 스키마 + Claude Code)으로 시작 가능 — 자세한 셋업은 별도 공유
 
 ---
 
