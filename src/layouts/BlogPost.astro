@@ -173,6 +173,98 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				max-width: 100%;
 				height: auto;
 			}
+			/* clickable affordance once rendered */
+			.prose :global(pre.mermaid[data-processed='true']) {
+				position: relative;
+				cursor: zoom-in;
+			}
+			.prose :global(pre.mermaid[data-processed='true']::after) {
+				content: '🔍 클릭하면 확대';
+				position: absolute;
+				top: 0.4em;
+				right: 0.4em;
+				padding: 0.25em 0.65em;
+				font-size: 0.72rem;
+				line-height: 1;
+				color: rgb(var(--gray-dark));
+				background: rgba(255, 255, 255, 0.85);
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 999px;
+				box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+				opacity: 0;
+				transition: opacity 0.15s ease;
+				pointer-events: none;
+			}
+			.prose :global(pre.mermaid[data-processed='true']:hover::after),
+			.prose :global(pre.mermaid[data-processed='true']:focus-visible::after) {
+				opacity: 1;
+			}
+
+			/* ── Mermaid lightbox overlay ── */
+			:global(.mermaid-lightbox) {
+				position: fixed;
+				inset: 0;
+				z-index: 1000;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: clamp(1rem, 4vw, 3rem);
+				background: rgba(15, 18, 22, 0.78);
+				-webkit-backdrop-filter: blur(2px);
+				backdrop-filter: blur(2px);
+				opacity: 0;
+				transition: opacity 0.18s ease;
+				overscroll-behavior: contain;
+			}
+			:global(.mermaid-lightbox.is-open) {
+				opacity: 1;
+			}
+			:global(.mermaid-lightbox__stage) {
+				position: relative;
+				max-width: 96vw;
+				max-height: 92vh;
+				overflow: auto;
+				background: #fff;
+				border-radius: 12px;
+				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+				padding: clamp(1rem, 3vw, 2.2rem);
+				-webkit-overflow-scrolling: touch;
+				touch-action: pinch-zoom;
+			}
+			:global(.mermaid-lightbox__stage svg) {
+				display: block;
+				width: auto;
+				height: auto;
+				max-width: none; /* allow enlargement beyond prose width */
+				min-width: min(80vw, 900px);
+			}
+			:global(.mermaid-lightbox__close) {
+				position: fixed;
+				top: clamp(0.75rem, 2vw, 1.5rem);
+				right: clamp(0.75rem, 2vw, 1.5rem);
+				width: 44px;
+				height: 44px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.5rem;
+				line-height: 1;
+				color: #fff;
+				background: rgba(255, 255, 255, 0.14);
+				border: 1px solid rgba(255, 255, 255, 0.4);
+				border-radius: 50%;
+				cursor: pointer;
+				transition: background 0.15s ease;
+			}
+			:global(.mermaid-lightbox__close:hover) {
+				background: rgba(255, 255, 255, 0.28);
+			}
+
+			@media (max-width: 720px) {
+				:global(.mermaid-lightbox__stage svg) {
+					min-width: 92vw;
+				}
+			}
 
 			@media (max-width: 720px) {
 				.hero-banner {
