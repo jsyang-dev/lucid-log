@@ -352,10 +352,89 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				});
 				try {
 					await mermaid.run({ nodes });
+					setupLightbox();
 				} catch (err) {
 					console.error('[mermaid] render failed', err);
 				}
 			}
+
+			// ── Lightbox: click a rendered diagram → enlarged overlay ──
+			let overlay: HTMLDivElement | null = null;
+
+			function closeLightbox() {
+				if (!overlay) return;
+				overlay.classList.remove('is-open');
+				document.body.style.overflow = '';
+				const el = overlay;
+				overlay = null;
+				window.setTimeout(() => el.remove(), 180);
+			}
+
+			function openLightbox(svg: SVGElement) {
+				closeLightbox();
+				overlay = document.createElement('div');
+				overlay.className = 'mermaid-lightbox';
+				overlay.setAttribute('role', 'dialog');
+				overlay.setAttribute('aria-modal', 'true');
+				overlay.setAttribute('aria-label', '다이어그램 확대 보기');
+
+				const stage = document.createElement('div');
+				stage.className = 'mermaid-lightbox__stage';
+				const clone = svg.cloneNode(true) as SVGElement;
+				// let the clone grow: drop inline width/height caps that shrink it
+				clone.removeAttribute('style');
+				stage.appendChild(clone);
+
+				const close = document.createElement('button');
+				close.type = 'button';
+				close.className = 'mermaid-lightbox__close';
+				close.setAttribute('aria-label', '닫기');
+				close.textContent = '✕';
+
+				overlay.appendChild(stage);
+				overlay.appendChild(close);
+				document.body.appendChild(overlay);
+				document.body.style.overflow = 'hidden';
+
+				// close interactions
+				overlay.addEventListener('click', (e) => {
+					if (e.target === overlay) closeLightbox();
+				});
+				close.addEventListener('click', closeLightbox);
+
+				// force reflow so the opacity transition plays
+				void overlay.offsetWidth;
+				overlay.classList.add('is-open');
+				close.focus();
+			}
+
+			function setupLightbox() {
+				const nodes = document.querySelectorAll<HTMLElement>(
+					"pre.mermaid[data-processed='true']",
+				);
+				nodes.forEach((pre) => {
+					if (pre.dataset.lightbox === 'on') return;
+					pre.dataset.lightbox = 'on';
+					pre.setAttribute('role', 'button');
+					pre.setAttribute('tabindex', '0');
+					pre.setAttribute('aria-label', '다이어그램 확대 보기 (클릭)');
+					const activate = () => {
+						const svg = pre.querySelector('svg');
+						if (svg) openLightbox(svg);
+					};
+					pre.addEventListener('click', activate);
+					pre.addEventListener('keydown', (e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							activate();
+						}
+					});
+				});
+			}
+
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape') closeLightbox();
+			});
 
 			if (document.readyState === 'loading') {
 				document.addEventListener('DOMContentLoaded', renderMermaid, { once: true });
