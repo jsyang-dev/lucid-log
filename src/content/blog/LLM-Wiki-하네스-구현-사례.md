@@ -91,7 +91,7 @@ flowchart LR
     RAW["raw/ 소스"]
     VAL["raw-validator<br/>(규칙 검증 게이트)"]
     ING["wiki-ingest<br/>추출·병합"]
-    WIKI["wiki/<br/>엔티티·개념·소스<br/>551페이지"]
+    WIKI["wiki/<br/>엔티티·개념·소스"]
     Q["wiki-query<br/>질의(근거+출처)"]
     L["wiki-lint<br/>orphan·모순·stale 점검"]
     R["wiki-revert<br/>잘못 편입 되돌리기"]
