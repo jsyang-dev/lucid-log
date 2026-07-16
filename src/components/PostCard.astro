@@ -14,13 +14,6 @@ const href = withBase(`/blog/${post.id}/`);
 ---
 
 <article class="post-card">
-	{
-		heroImage && (
-			<a class="thumb" href={href} tabindex="-1" aria-hidden="true">
-				<Image width={840} height={472} src={heroImage} alt="" />
-			</a>
-		)
-	}
 	<div class="body">
 		<p class="date">
 			<FormattedDate date={pubDate} />
@@ -31,19 +24,39 @@ const href = withBase(`/blog/${post.id}/`);
 		{description && <p class="desc">{description}</p>}
 		<TagList tags={tags} />
 	</div>
+	{
+		heroImage && (
+			<a class="thumb" href={href} tabindex="-1" aria-hidden="true">
+				<Image width={360} height={270} src={heroImage} alt="" />
+			</a>
+		)
+	}
 </article>
 
 <style>
 	.post-card {
 		display: flex;
-		flex-direction: column;
-		gap: 1em;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 1.4em;
 	}
+	.body {
+		flex: 1 1 auto;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.55em;
+		order: 1;
+	}
+	/* Small fixed thumbnail (list/index/tag views only) */
 	.thumb {
+		order: 2;
+		flex: 0 0 auto;
+		width: 168px;
+		aspect-ratio: 4 / 3;
 		display: block;
 		overflow: hidden;
 		border-radius: var(--radius);
-		aspect-ratio: 16 / 9;
 		background: rgb(var(--surface-2));
 	}
 	.thumb :global(img) {
@@ -54,12 +67,7 @@ const href = withBase(`/blog/${post.id}/`);
 		transition: transform 0.4s ease;
 	}
 	.thumb:hover :global(img) {
-		transform: scale(1.03);
-	}
-	.body {
-		display: flex;
-		flex-direction: column;
-		gap: 0.55em;
+		transform: scale(1.04);
 	}
 	.date {
 		margin: 0;
@@ -69,7 +77,7 @@ const href = withBase(`/blog/${post.id}/`);
 	}
 	.title {
 		margin: 0;
-		font-size: 1.5rem;
+		font-size: 1.35rem;
 		line-height: 1.35;
 	}
 	.title a {
@@ -82,7 +90,7 @@ const href = withBase(`/blog/${post.id}/`);
 	.desc {
 		margin: 0;
 		color: rgb(var(--gray));
-		font-size: 0.98rem;
+		font-size: 0.95rem;
 		line-height: 1.65;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -92,9 +100,19 @@ const href = withBase(`/blog/${post.id}/`);
 	.post-card .tags {
 		margin-top: 0.15em;
 	}
-	@media (max-width: 720px) {
+	@media (max-width: 560px) {
+		.post-card {
+			gap: 1em;
+		}
+		.thumb {
+			width: 96px;
+			border-radius: 10px;
+		}
 		.title {
-			font-size: 1.3rem;
+			font-size: 1.15rem;
+		}
+		.desc {
+			-webkit-line-clamp: 2;
 		}
 	}
 </style>

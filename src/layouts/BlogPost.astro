@@ -153,6 +153,27 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				color: rgb(var(--gray-dark));
 			}
 
+			/* ── Mermaid diagrams (client-rendered) ── */
+			.prose :global(pre.mermaid) {
+				/* reset the code-block chrome from global.css */
+				background: none;
+				border: none;
+				padding: 0.5em 0;
+				margin: 1.8em 0;
+				text-align: center;
+				overflow-x: auto;
+				/* hide raw source until mermaid swaps in the SVG */
+				color: transparent;
+				line-height: normal;
+			}
+			.prose :global(pre.mermaid[data-processed='true']) {
+				color: inherit;
+			}
+			.prose :global(pre.mermaid svg) {
+				max-width: 100%;
+				height: auto;
+			}
+
 			@media (max-width: 720px) {
 				.hero-banner {
 					height: clamp(200px, 46vw, 300px);
@@ -221,5 +242,34 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 			</article>
 		</main>
 		<Footer />
+		<script>
+			import mermaid from 'mermaid';
+
+			const blocks = () =>
+				Array.from(document.querySelectorAll('pre.mermaid'));
+
+			async function renderMermaid() {
+				const nodes = blocks();
+				if (nodes.length === 0) return;
+				mermaid.initialize({
+					startOnLoad: false,
+					theme: 'neutral',
+					securityLevel: 'strict',
+					fontFamily:
+						"Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+				});
+				try {
+					await mermaid.run({ nodes });
+				} catch (err) {
+					console.error('[mermaid] render failed', err);
+				}
+			}
+
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', renderMermaid, { once: true });
+			} else {
+				renderMermaid();
+			}
+		</script>
 	</body>
 </html>
