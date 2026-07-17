@@ -131,7 +131,7 @@ flowchart LR
 
 ## 6. 참고
 
--  **Karpathy LLM Wiki (원본 gist)**: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
+- **Karpathy LLM Wiki (원본 gist)**: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
 
 ---
 
