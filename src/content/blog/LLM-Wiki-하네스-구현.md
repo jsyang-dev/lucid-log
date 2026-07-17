@@ -90,12 +90,7 @@ raw 소스가 ingest를 거쳐 wiki로 편입되고, wiki를 대상으로 질의
 
 ```mermaid
 flowchart LR
-    subgraph FEED["raw 생산 (별도 하네스)"]
-        direction TB
-        T["태스크 노트<br/>task-noter"]
-        M["회의 노트<br/>meeting-noter"]
-        C["도메인 개념 노트"]
-    end
+    NOTE["노트 생성"]
 
     RAW["<b>raw/</b> 소스<br/>(1계층·불변)"]
     ING["wiki-ingest<br/>추출·병합"]
@@ -104,9 +99,7 @@ flowchart LR
     L["wiki-lint<br/>orphan·모순·stale 점검"]
     R["wiki-revert<br/>잘못 편입 되돌리기"]
 
-    T --> RAW
-    M --> RAW
-    C --> RAW
+    NOTE --> RAW
     RAW --> ING --> WIKI
     WIKI --> Q
     WIKI --> L
