@@ -204,13 +204,13 @@ flowchart TD
 
 ### 에이전트 (5)
 
-| 에이전트 | 역할 | 유형 |
-|---|---|---|
-| `raw-validator` | raw가 규칙(raw-authoring)에 맞는지 검증 + CMDS 분류 판정. **수집 전 게이트키퍼** | 게이트 |
-| `wiki-ingest` | 검증 통과 raw를 entity·concept·source로 생성·병합, index·log 갱신 | 생성·병합 |
-| `wiki-query` | wiki를 검색·종합해 답하고 가치 있는 결과를 편입 | 조회·종합 |
-| `wiki-lint` | wiki 건강도(orphan·stale·모순·missing·태그) 점검·수정 제안 | 점검 |
-| `wiki-revert` | log 기반으로 ingest 되돌리기(생성 삭제+언머지+index/lint 정리) | 되돌리기 |
+| 에이전트            | 역할                                                          | 유형    |
+| --------------- | ----------------------------------------------------------- | ----- |
+| `raw-validator` | raw가 규칙(raw-authoring)에 맞는지 검증 + CMDS 분류 판정. **수집 전 게이트키퍼** | 게이트   |
+| `wiki-ingest`   | 검증 통과 raw를 entity·concept·source로 생성·병합, index·log 갱신       | 생성·병합 |
+| `wiki-query`    | wiki를 검색·종합해 답하고 가치 있는 결과를 편입                               | 조회·종합 |
+| `wiki-lint`     | wiki 건강도(orphan·stale·모순·missing·태그) 점검·수정 제안               | 점검    |
+| `wiki-revert`   | log 기반으로 ingest 되돌리기(생성 삭제+언머지+index/lint 정리)               | 되돌리기  |
 
 - **매핑**: 오퍼레이션 대부분이 `스킬 1 ↔ 에이전트 1`. `raw-authoring`(규칙)은 `raw-validator`(게이트) 에이전트가 집행하고, `llm-wiki`(오케스트레이터)는 전용 에이전트 없이 개별 스킬을 호출한다.
 - **정의 위치**: 스킬 `.claude/skills/` · 에이전트 `.claude/agents/` · 스키마 `AGENTS.md`.
