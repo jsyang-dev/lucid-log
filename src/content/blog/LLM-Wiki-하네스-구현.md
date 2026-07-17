@@ -131,10 +131,7 @@ flowchart LR
 
 ## 6. 참고
 
-- LLM Wiki — 패턴 개념·구현체 비교·트렌드 정리(1차 출처 검증)
-- LLM Wiki 실습 가이드 — 설치·구성·운영
-- Andrej Karpathy — 패턴 제안자 / RAG · GraphRAG — 비교 대상
-- **Karpathy LLM Wiki (원본 gist)**: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
+-  **Karpathy LLM Wiki (원본 gist)**: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
 
 ---
 
