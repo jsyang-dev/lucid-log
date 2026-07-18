@@ -200,8 +200,13 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				opacity: 1;
 			}
 
-			/* ── Mermaid lightbox overlay ── */
-			:global(.mermaid-lightbox) {
+			/* ── Content images: click-to-zoom affordance ── */
+			.prose :global(img) {
+				cursor: zoom-in;
+			}
+
+			/* ── Lightbox overlay (diagrams + images) ── */
+			:global(.lightbox) {
 				position: fixed;
 				inset: 0;
 				z-index: 1000;
@@ -216,11 +221,10 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				transition: opacity 0.18s ease;
 				overscroll-behavior: contain;
 			}
-			:global(.mermaid-lightbox.is-open) {
+			:global(.lightbox.is-open) {
 				opacity: 1;
 			}
-			:global(.mermaid-lightbox__stage) {
-				position: relative;
+			:global(.lightbox__stage) {
 				max-width: 96vw;
 				max-height: 92vh;
 				overflow: auto;
@@ -229,16 +233,63 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 				padding: clamp(1rem, 3vw, 2.2rem);
 				-webkit-overflow-scrolling: touch;
-				touch-action: pinch-zoom;
 			}
-			:global(.mermaid-lightbox__stage svg) {
+			:global(.lightbox__content) {
+				margin: 0 auto;
+				transition: width 0.12s ease;
+			}
+			:global(.lightbox__content svg),
+			:global(.lightbox__content img) {
 				display: block;
-				width: auto;
+				width: 100%;
 				height: auto;
-				max-width: none; /* allow enlargement beyond prose width */
-				min-width: min(80vw, 900px);
 			}
-			:global(.mermaid-lightbox__close) {
+			/* zoom toolbar */
+			:global(.lightbox__toolbar) {
+				position: fixed;
+				bottom: clamp(0.9rem, 3vw, 1.8rem);
+				left: 50%;
+				transform: translateX(-50%);
+				display: flex;
+				align-items: center;
+				gap: 0.25rem;
+				padding: 0.3rem 0.45rem;
+				background: rgba(28, 32, 38, 0.92);
+				border: 1px solid rgba(255, 255, 255, 0.18);
+				border-radius: 999px;
+				box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+			}
+			:global(.lightbox__btn) {
+				width: 40px;
+				height: 40px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.3rem;
+				line-height: 1;
+				color: #fff;
+				background: transparent;
+				border: none;
+				border-radius: 50%;
+				cursor: pointer;
+				transition: background 0.15s ease;
+			}
+			:global(.lightbox__btn:hover) {
+				background: rgba(255, 255, 255, 0.16);
+			}
+			:global(.lightbox__btn:disabled) {
+				opacity: 0.35;
+				cursor: default;
+			}
+			:global(.lightbox__zoomlabel) {
+				min-width: 3.6em;
+				text-align: center;
+				font-size: 0.85rem;
+				color: rgba(255, 255, 255, 0.9);
+				font-variant-numeric: tabular-nums;
+				user-select: none;
+			}
+			:global(.lightbox__close) {
 				position: fixed;
 				top: clamp(0.75rem, 2vw, 1.5rem);
 				right: clamp(0.75rem, 2vw, 1.5rem);
@@ -256,14 +307,8 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				cursor: pointer;
 				transition: background 0.15s ease;
 			}
-			:global(.mermaid-lightbox__close:hover) {
+			:global(.lightbox__close:hover) {
 				background: rgba(255, 255, 255, 0.28);
-			}
-
-			@media (max-width: 720px) {
-				:global(.mermaid-lightbox__stage svg) {
-					min-width: 92vw;
-				}
 			}
 
 			@media (max-width: 720px) {
@@ -358,7 +403,7 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				}
 			}
 
-			// ── Lightbox: click a rendered diagram → enlarged overlay ──
+			// ── Lightbox: click a diagram or image → zoomable overlay ──
 			let overlay: HTMLDivElement | null = null;
 
 			function closeLightbox() {
@@ -370,37 +415,147 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				window.setTimeout(() => el.remove(), 180);
 			}
 
-			function openLightbox(svg: SVGElement) {
+			function makeBtn(glyph: string, label: string, zoomKey: string) {
+				const b = document.createElement('button');
+				b.type = 'button';
+				b.className = 'lightbox__btn';
+				b.setAttribute('aria-label', label);
+				b.title = label;
+				b.dataset.zoom = zoomKey;
+				b.textContent = glyph;
+				return b;
+			}
+
+			function openLightbox(source: SVGElement | HTMLImageElement) {
 				closeLightbox();
 				overlay = document.createElement('div');
-				overlay.className = 'mermaid-lightbox';
+				overlay.className = 'lightbox';
 				overlay.setAttribute('role', 'dialog');
 				overlay.setAttribute('aria-modal', 'true');
-				overlay.setAttribute('aria-label', '다이어그램 확대 보기');
+				overlay.setAttribute('aria-label', '확대 보기');
 
 				const stage = document.createElement('div');
-				stage.className = 'mermaid-lightbox__stage';
-				const clone = svg.cloneNode(true) as SVGElement;
-				// let the clone grow: drop inline width/height caps that shrink it
-				clone.removeAttribute('style');
-				stage.appendChild(clone);
+				stage.className = 'lightbox__stage';
+				const content = document.createElement('div');
+				content.className = 'lightbox__content';
+
+				let node: SVGElement | HTMLImageElement;
+				if (source instanceof HTMLImageElement) {
+					const img = document.createElement('img');
+					img.src = source.currentSrc || source.src;
+					img.alt = source.alt || '';
+					node = img;
+				} else {
+					const clone = source.cloneNode(true) as SVGElement;
+					// drop inline sizing so it can grow freely
+					clone.removeAttribute('style');
+					clone.removeAttribute('width');
+					clone.removeAttribute('height');
+					node = clone;
+				}
+				content.appendChild(node);
+				stage.appendChild(content);
+
+				// zoom toolbar
+				const toolbar = document.createElement('div');
+				toolbar.className = 'lightbox__toolbar';
+				const zoomOut = makeBtn('−', '축소', 'out');
+				const zoomLabel = document.createElement('span');
+				zoomLabel.className = 'lightbox__zoomlabel';
+				const zoomIn = makeBtn('+', '확대', 'in');
+				const reset = makeBtn('⤢', '원래 크기', 'reset');
+				toolbar.append(zoomOut, zoomLabel, zoomIn, reset);
 
 				const close = document.createElement('button');
 				close.type = 'button';
-				close.className = 'mermaid-lightbox__close';
+				close.className = 'lightbox__close';
 				close.setAttribute('aria-label', '닫기');
 				close.textContent = '✕';
 
-				overlay.appendChild(stage);
-				overlay.appendChild(close);
+				overlay.append(stage, toolbar, close);
 				document.body.appendChild(overlay);
 				document.body.style.overflow = 'hidden';
 
-				// close interactions
+				// ── zoom state (scales the content width; stage scrolls) ──
+				const MIN = 0.5;
+				const MAX = 5;
+				const STEP = 1.25;
+				let scale = 1;
+				let baseWidth = 0;
+
+				function measureBase() {
+					const cs = getComputedStyle(stage);
+					const inner =
+						stage.clientWidth -
+						parseFloat(cs.paddingLeft) -
+						parseFloat(cs.paddingRight);
+					let natural = 0;
+					if (node instanceof HTMLImageElement) {
+						natural = node.naturalWidth || inner;
+					} else {
+						natural = node.getBoundingClientRect().width || inner;
+					}
+					// 100% = fit-to-stage (or natural size if it's smaller)
+					baseWidth = Math.min(natural, inner) || inner;
+				}
+
+				function apply() {
+					content.style.width = Math.round(baseWidth * scale) + 'px';
+					zoomLabel.textContent = Math.round(scale * 100) + '%';
+					zoomOut.disabled = scale <= MIN + 0.001;
+					zoomIn.disabled = scale >= MAX - 0.001;
+				}
+
+				function zoom(factor: number) {
+					scale = Math.min(MAX, Math.max(MIN, scale * factor));
+					apply();
+				}
+
+				measureBase();
+				apply();
+
+				zoomIn.addEventListener('click', (e) => {
+					e.stopPropagation();
+					zoom(STEP);
+				});
+				zoomOut.addEventListener('click', (e) => {
+					e.stopPropagation();
+					zoom(1 / STEP);
+				});
+				reset.addEventListener('click', (e) => {
+					e.stopPropagation();
+					scale = 1;
+					apply();
+				});
+
+				// re-measure once an <img> has loaded its natural size
+				if (node instanceof HTMLImageElement && !node.complete) {
+					node.addEventListener(
+						'load',
+						() => {
+							measureBase();
+							apply();
+						},
+						{ once: true },
+					);
+				}
+
+				// close on backdrop click / close button
 				overlay.addEventListener('click', (e) => {
 					if (e.target === overlay) closeLightbox();
 				});
 				close.addEventListener('click', closeLightbox);
+
+				// ctrl/⌘ + wheel to zoom
+				stage.addEventListener(
+					'wheel',
+					(e) => {
+						if (!e.ctrlKey && !e.metaKey) return;
+						e.preventDefault();
+						zoom(e.deltaY < 0 ? STEP : 1 / STEP);
+					},
+					{ passive: false },
+				);
 
 				// force reflow so the opacity transition plays
 				void overlay.offsetWidth;
@@ -408,38 +563,72 @@ const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.prop
 				close.focus();
 			}
 
-			function setupLightbox() {
-				const nodes = document.querySelectorAll<HTMLElement>(
-					"pre.mermaid[data-processed='true']",
-				);
-				nodes.forEach((pre) => {
-					if (pre.dataset.lightbox === 'on') return;
-					pre.dataset.lightbox = 'on';
-					pre.setAttribute('role', 'button');
-					pre.setAttribute('tabindex', '0');
-					pre.setAttribute('aria-label', '다이어그램 확대 보기 (클릭)');
-					const activate = () => {
-						const svg = pre.querySelector('svg');
-						if (svg) openLightbox(svg);
-					};
-					pre.addEventListener('click', activate);
-					pre.addEventListener('keydown', (e) => {
-						if (e.key === 'Enter' || e.key === ' ') {
-							e.preventDefault();
-							activate();
-						}
-					});
+			function wireTrigger(
+				el: HTMLElement,
+				getSource: () => SVGElement | HTMLImageElement | null,
+			) {
+				if (el.dataset.lightbox === 'on') return;
+				el.dataset.lightbox = 'on';
+				el.setAttribute('role', 'button');
+				el.setAttribute('tabindex', '0');
+				const activate = () => {
+					const src = getSource();
+					if (src) openLightbox(src);
+				};
+				el.addEventListener('click', activate);
+				el.addEventListener('keydown', (e) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						activate();
+					}
 				});
 			}
 
+			function setupLightbox() {
+				document
+					.querySelectorAll<HTMLElement>("pre.mermaid[data-processed='true']")
+					.forEach((pre) => {
+						pre.setAttribute('aria-label', '다이어그램 확대 보기 (클릭)');
+						wireTrigger(pre, () => pre.querySelector('svg'));
+					});
+				document
+					.querySelectorAll<HTMLImageElement>('.prose img')
+					.forEach((img) => {
+						img.setAttribute(
+							'aria-label',
+							(img.alt ? img.alt + ' — ' : '') + '이미지 확대 보기 (클릭)',
+						);
+						wireTrigger(img, () => img);
+					});
+			}
+
 			document.addEventListener('keydown', (e) => {
-				if (e.key === 'Escape') closeLightbox();
+				if (e.key === 'Escape') {
+					closeLightbox();
+					return;
+				}
+				if (!overlay) return;
+				let key: string | null = null;
+				if (e.key === '+' || e.key === '=') key = 'in';
+				else if (e.key === '-' || e.key === '_') key = 'out';
+				else if (e.key === '0') key = 'reset';
+				if (key) {
+					e.preventDefault();
+					overlay
+						.querySelector<HTMLButtonElement>(`.lightbox__btn[data-zoom="${key}"]`)
+						?.click();
+				}
 			});
 
+			function init() {
+				setupLightbox(); // wire images immediately (independent of mermaid)
+				renderMermaid(); // render diagrams, then re-wire them
+			}
+
 			if (document.readyState === 'loading') {
-				document.addEventListener('DOMContentLoaded', renderMermaid, { once: true });
+				document.addEventListener('DOMContentLoaded', init, { once: true });
 			} else {
-				renderMermaid();
+				init();
 			}
 		</script>
 	</body>
