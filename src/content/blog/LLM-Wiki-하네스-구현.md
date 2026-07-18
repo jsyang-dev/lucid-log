@@ -2,7 +2,7 @@
 title: "LLM Wiki - 하네스 구현"
 description: "개요: 흩어진 개인·업무 노트(태스크·회의·도메인)를 LLM이 정제·연결한 지식 베이스(wiki) 로 통합하는 시스템을, Claude Code 하네스(스킬·에이전트·스키마)로 구현한 사례다."
 pubDate: '2026-07-16'
-updatedDate: '2026-07-17'
+updatedDate: '2026-07-18'
 heroImage: '../../assets/heroes/LLM-Wiki-하네스-구현.jpg'
 tags: ["llm-wiki", "하네스", "knowledge-base", "claude-code", "공유"]
 ---
