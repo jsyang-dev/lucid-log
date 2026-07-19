@@ -2,7 +2,7 @@
 title: "LLM Wiki - 하네스 구현"
 description: "개요: 흩어진 개인·업무 노트(태스크·회의·도메인)를 LLM이 정제·연결한 지식 베이스(wiki) 로 통합하는 시스템을, Claude Code 하네스(스킬·에이전트·스키마)로 구현한 사례다."
 pubDate: '2026-07-16'
-updatedDate: '2026-07-18'
+updatedDate: '2026-07-19'
 heroImage: '../../assets/heroes/LLM-Wiki-하네스-구현.jpg'
 tags: ["llm-wiki", "하네스", "knowledge-base", "claude-code", "공유"]
 ---
@@ -39,7 +39,6 @@ Andrej Karpathy가 2026년 4월 GitHub Gist로 제안한 지식 베이스 패턴
 | **3계층** | Schema | `AGENTS.md` | 사람이 정의, LLM이 준수 | wiki의 생성·병합·유지 규칙(단일 진실 공급원) |
 
 - **안전장치**: "sources는 읽기만, wiki 폴더만 생성·수정" 원칙에 따라 기존 볼트에 적용해도 원본이 오염되지 않는다.
-- 스키마 파일명은 도구별로 다르다. Claude Code는 `CLAUDE.md`, Codex는 `AGENTS.md`를 사용하며, 본 볼트는 `AGENTS.md`를 스키마로 채택했다.
 
 ### 2-2. wiki 페이지 3종 — 2계층의 산출물
 
