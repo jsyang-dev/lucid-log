@@ -173,6 +173,7 @@ flowchart LR
 
 - **단방향 병합**: ingest는 wiki로만 쓰며, raw는 절대 수정하지 않는다.
 - **유지 루프**: query·lint·revert는 모두 wiki를 대상으로 순환하며, 스키마가 이 조작들을 규율한다.
+- **양쪽 규율**: `raw-authoring`이 raw 문서의 작성·분류·검증 기준을, `AGENTS.md`가 wiki 조작을 각각 규율한다.
 
 ## 5. 구현 — 스킬 · 에이전트
 
