@@ -161,6 +161,9 @@ flowchart LR
     WIKI --> R
     R -.언머지.-> WIKI
 
+    RA["<b>raw-authoring</b><br/>raw 작성·분류·검증 규칙"]
+    RA -.규칙.-> RAW
+
     AGENTS["<b>AGENTS.md</b> (3계층 Schema)<br/>— 모든 wiki 조작을 지배"]
     AGENTS -.규칙.-> ING
     AGENTS -.규칙.-> Q
