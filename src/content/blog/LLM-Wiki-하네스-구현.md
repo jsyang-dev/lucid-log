@@ -176,14 +176,14 @@ flowchart LR
 
 각 오퍼레이션을 **스킬(어떻게 — 절차·규칙) + 에이전트(누가 — 실행 주체)** 로 분리해, description 키워드로 다음 세션에도 자동 트리거되는 하네스로 구현했다.
 
-| 스킬 | 역할 |
-|---|---|
-| `llm-wiki` | 오케스트레이터 — 필요한 오퍼레이션 판별·라우팅 |
-| `raw-authoring` | raw 문서 작성·분류(CMDS)·검증 규칙 |
-| `wiki-ingest` | raw → 엔티티·개념·소스 변환·병합, index·log 갱신 |
-| `wiki-query` | index 라우팅으로 관련 페이지 로드·링크 추적해 답(출처 명시) |
-| `wiki-lint` | orphan·stale·모순·깨진 링크·태그 위반 점검 |
-| `wiki-revert` | 잘못 편입된 소스의 기여분만 언머지 |
+| 스킬              | 역할                                    |
+| --------------- | ------------------------------------- |
+| `llm-wiki`      | 오케스트레이터 — 필요한 오퍼레이션 판별·라우팅            |
+| `raw-authoring` | raw 문서 작성·분류(CMDS)·검증 규칙              |
+| `wiki-ingest`   | raw → 엔티티·개념·소스 변환·병합, index·log 갱신   |
+| `wiki-query`    | index 라우팅으로 관련 페이지 로드·링크 추적해 답(출처 명시) |
+| `wiki-lint`     | orphan·stale·모순·깨진 링크·태그 위반 점검        |
+| `wiki-revert`   | 잘못 편입된 소스의 기여분만 언머지                   |
 
 - **에이전트**: `wiki-ingest`·`wiki-query`·`wiki-lint`·`wiki-revert`가 각 오퍼레이션의 실행 주체다(스킬 1 ↔ 에이전트 1). `llm-wiki`는 전용 에이전트 없이 개별 스킬을 호출한다.
 - **정의 위치**: 스킬 `.claude/skills/`, 에이전트 `.claude/agents/`, 스키마 `AGENTS.md`.
