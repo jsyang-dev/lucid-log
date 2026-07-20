@@ -28,7 +28,7 @@ Andrej Karpathy가 2026년 4월 GitHub Gist로 제안한 지식 베이스 패턴
 
 ![](../../assets/post-assets/LLM-Wiki-하네스-구현/llm-wiki-3계층-아키텍처.png)
 
-### 2-1. 3계층
+### 2-1. 구성요소3계층
 
 패턴의 골격은 **소유·권한이 명확히 구분된 세 계층**이다.
 
