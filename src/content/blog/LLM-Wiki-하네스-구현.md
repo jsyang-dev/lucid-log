@@ -182,7 +182,7 @@ flowchart LR
 | 스킬              | 역할                                    |
 | --------------- | ------------------------------------- |
 | `llm-wiki`      | 오케스트레이터 — 필요한 오퍼레이션 판별·라우팅            |
-| `raw-authoring` | raw 문서 작성·분류·검증 규칙 (커스텀 스킬)           |
+| `raw-authoring` | raw 문서 작성·분류·검증 규칙                    |
 | `wiki-ingest`   | raw → 엔티티·개념·소스 변환·병합, index·log 갱신   |
 | `wiki-query`    | index 라우팅으로 관련 페이지 로드·링크 추적해 답(출처 명시) |
 | `wiki-lint`     | orphan·stale·모순·깨진 링크·태그 위반 점검        |
