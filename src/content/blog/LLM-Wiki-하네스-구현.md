@@ -172,7 +172,7 @@ flowchart LR
 - 정제(ingest)에 선불 비용이 발생하므로, 중복이 적은 소수 문서에는 과도하다.
 - 수집 시점의 오해석이 답변에 내장되므로 `lint`·`revert` 유지 루프가 중요하다.
 
-## 6. 참고
+## 7. 참고
 
 - **Karpathy LLM Wiki**: <https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f>
 
