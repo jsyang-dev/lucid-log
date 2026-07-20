@@ -188,6 +188,7 @@ flowchart LR
 | `wiki-lint`     | orphan·stale·모순·깨진 링크·태그 위반 점검        |
 | `wiki-revert`   | 잘못 편입된 소스의 기여분만 언머지                   |
 
+- **원본 패턴 외 확장**: `raw-authoring`(raw 저작·검증 규칙)과 `wiki-revert`(되돌리기)는 Karpathy **원본 LLM Wiki 패턴에는 없는** 본 구현의 확장이다. 나머지(`llm-wiki` 오케스트레이션, ingest·query·lint)가 원본 패턴에 대응한다.
 - **에이전트**: `wiki-ingest`·`wiki-query`·`wiki-lint`·`wiki-revert`가 각 오퍼레이션의 실행 주체다(스킬 1 ↔ 에이전트 1). `llm-wiki`는 전용 에이전트 없이 개별 스킬을 호출한다.
 - **정의 위치**: 스킬 `.claude/skills/`, 에이전트 `.claude/agents/`, 스키마 `AGENTS.md`.
 
